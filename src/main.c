@@ -13,9 +13,8 @@
 
 #include "stm32f0xx.h"
 #include "stm32f0_discovery.h"
-#include "ADC_example.h"
+#include "ADC.h"
 #include "I2C_controller.h"
-//#include "FSM.h"
 #include "status_leds.h"
 #include "stm32f0xx_tim.h"
 #include "Buffer.h"
@@ -70,10 +69,6 @@ int main(void)
 	Configure_GPIO_I2C2();
 	Configure_I2C2_Master();
 
-
-	//init_FSM();
-
-
 	//Configure_GPIO_USART1();
 	//Configure_USART1();
 
@@ -119,12 +114,4 @@ void vGeneralTaskInit(void){
 		NULL,                 // pvParameters
 		tskIDLE_PRIORITY + 1, // uxPriority
 		NULL              ); // pvCreatedTask */
-}
-
-void TIM16_IRQHandler(void)//Once per second
-{
-	if (TIM_GetITStatus(TIM16, TIM_IT_Update) != RESET){
-		GPIOC->ODR ^= GPIO_ODR_9;
-		TIM_ClearITPendingBit(TIM16, TIM_IT_Update);
-	}
 }
