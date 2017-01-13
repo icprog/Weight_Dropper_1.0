@@ -3,7 +3,7 @@
 // Copyright (c) 2014 Liviu Ionescu.
 //
 
-#include "ADC_example.h"
+#include "ADC.h"
 #include "stm32f0xx.h"
 #include "system_info.h"
 
