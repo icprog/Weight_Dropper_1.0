@@ -86,13 +86,14 @@ int main(void)
 
 
 void bootUpSeq(void *dummy){
+
 	vGeneralTaskInit();
 	vTaskDelete(NULL);
 }
 
 void blinkyTask(void *dummy){
 	while(1){
-		GPIOA->ODR ^= GPIO_ODR_3;
+		GPIOC->ODR ^= GPIO_ODR_8;
 		/* maintain LED3 status for 200ms */
 		vTaskDelay(500);
 	}
