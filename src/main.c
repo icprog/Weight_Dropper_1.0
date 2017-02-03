@@ -13,7 +13,7 @@
 
 #include "stm32f0xx.h"
 #include "stm32f0_discovery.h"
-#include "ADC.h"
+//#include "ADC.h"
 #include "I2C_controller.h"
 #include "status_leds.h"
 #include "stm32f0xx_tim.h"
@@ -23,13 +23,14 @@
 #include "task.h"
 #include "semphr.h"
 
+#include "ADC.c"
+#include "Trace.h" //warning! remove later from workspace
 /*
  * I2C2_semaphore_control is used when a task want to take control of the I2C2 bus
  * This does not necessarily mean that the task is using the I2C2 bus it just
  * means that it has a use for it and needs to block it from other tasks
  */
 static SemaphoreHandle_t I2C2_semaphore_control;
-
 
 void vApplicationTickHook( void )
 {
@@ -52,7 +53,6 @@ void CreateSemaphores(void){
 
 int main(void)
 {
-
 	blink_led_C8_C9_init();
 
 	/*
@@ -88,6 +88,7 @@ int main(void)
 void bootUpSeq(void *dummy){
 
 	vGeneralTaskInit();
+	vdoADCTask();
 	vTaskDelete(NULL);
 }
 
@@ -96,6 +97,49 @@ void blinkyTask(void *dummy){
 		GPIOC->ODR ^= GPIO_ODR_8;
 		/* maintain LED3 status for 200ms */
 		vTaskDelay(500);
+	}
+}
+
+void doADC(void *dummy){
+	myADC_Init();
+//		ADC_InitTypeDef ADC_InitStructure;
+//
+//		/*peripheral clock for ADC1 */
+//		RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);
+//
+//		/* Deinitializes ADC1 peripheral registers to their default reset values*/
+//		ADC_DeInit(ADC1);
+//
+//		ADC_StructInit(&ADC_InitStructure);
+//
+//		/* ADC1 Configuration Settings  */
+//		ADC_InitStructure.ADC_Resolution = ADC_Resolution_12b;
+//		ADC_InitStructure.ADC_ContinuousConvMode = 0;
+//		ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_None;
+//		ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
+//		ADC_InitStructure.ADC_ScanDirection = ADC_ScanDirection_Upward;
+//
+//		ADC_Init(ADC1, &ADC_InitStructure);
+//
+//		/* Using channel 11 with 239.5 Cycles sampling time */
+//		ADC_ChannelConfig(ADC1, ADC_Channel_11 , ADC_SampleTime_239_5Cycles);
+//		//channel 11 for PC1 confirmed on datasheet
+//
+//		/* Enable the ADC */
+//		ADC_Cmd(ADC1, ENABLE);
+//
+//		/* Wait for the ADRDY flag to check ADC is ready */
+//		while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_ADRDY));
+//
+//		/*Start conversion */
+//		ADC_StartOfConversion(ADC1);
+
+	int voltage_v = 0;
+	//int voltage_c = 0;
+	while(1){
+		unsigned int voltage_steps = ADC1->DR; //get value from adc
+		voltage_v = (voltage_steps / 4095.0);
+		//trace_printf("Voltage: %d Volts\n", voltage_v);
 	}
 }
 
@@ -115,4 +159,13 @@ void vGeneralTaskInit(void){
 		NULL,                 // pvParameters
 		tskIDLE_PRIORITY + 1, // uxPriority
 		NULL              ); // pvCreatedTask */
+}
+
+void vdoADCTask(void){
+	xTaskCreate(doADC,
+			(const signed char *)"doADC",
+			configMINIMAL_STACK_SIZE,
+			NULL,
+			tskIDLE_PRIORITY +1, //uxPriority??
+			NULL			);
 }
