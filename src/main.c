@@ -23,7 +23,7 @@
 #include "task.h"
 #include "semphr.h"
 
-#include "ADC.h"
+#include "ADC.c"
 #include "Trace.h" //warning! remove later from workspace
 /*
  * I2C2_semaphore_control is used when a task want to take control of the I2C2 bus

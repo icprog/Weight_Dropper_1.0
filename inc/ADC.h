@@ -24,8 +24,6 @@ void ConfigureADC(void);
 void EnableADC(void);
 void DisableADC(void);
 void ConfigureTIM15(void);
-
-void myADC_Init();
 // ----------------------------------------------------------------------------
 
 
