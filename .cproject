@@ -31,8 +31,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/stm32f0discovery_stdperiph_lib/CMSIS/device}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/stm32f0discovery_stdperiph_lib/StdPeriph_Driver/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/stm32f0discovery_stdperiph_lib/Utilities}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Weight_Dropper/rtos}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Weight_Dropper/rtos/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/rtos/inc}&quot;"/>
 								</option>
 								<option id="gnu.c.compiler.option.preprocessor.def.symbols.1696140182" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="STM32F051R8Tx"/>
@@ -54,9 +53,11 @@
 							<tool id="fr.ac6.managedbuild.tool.gnu.cross.c.linker.91706836" name="MCU GCC Linker" superClass="fr.ac6.managedbuild.tool.gnu.cross.c.linker">
 								<option id="gnu.c.link.option.paths.918105010" name="Library search path (-L)" superClass="gnu.c.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/stm32f0discovery_stdperiph_lib/Debug}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/rtos/Debug}&quot;"/>
 								</option>
 								<option id="gnu.c.link.option.libs.1119124744" name="Libraries (-l)" superClass="gnu.c.link.option.libs" valueType="libs">
-									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="stm32f0discovery_stdperiph_lib"/>
+									<listOptionValue builtIn="false" value="stm32f0discovery_stdperiph_lib"/>
+									<listOptionValue builtIn="false" value="rtos"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.linker.input.903485846" superClass="cdt.managedbuild.tool.gnu.c.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
@@ -73,8 +74,6 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/stm32f0discovery_stdperiph_lib/CMSIS/device}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/stm32f0discovery_stdperiph_lib/StdPeriph_Driver/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/stm32f0discovery_stdperiph_lib/Utilities}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Soft_start_2_move_over/rtos}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Soft_start_2_move_over/rtos/include}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.880257524" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 								<inputType id="fr.ac6.managedbuild.tool.gnu.cross.assembler.input.591896800" superClass="fr.ac6.managedbuild.tool.gnu.cross.assembler.input"/>
@@ -128,8 +127,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/stm32f0discovery_stdperiph_lib/CMSIS/device}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/stm32f0discovery_stdperiph_lib/StdPeriph_Driver/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/stm32f0discovery_stdperiph_lib/Utilities}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Weight_Dropper/rtos}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Weight_Dropper/rtos/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/rtos/inc}&quot;"/>
 								</option>
 								<option id="gnu.c.compiler.option.preprocessor.def.symbols.916503077" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="STM32F051R8Tx"/>
@@ -149,9 +147,11 @@
 							<tool id="fr.ac6.managedbuild.tool.gnu.cross.c.linker.1438683838" name="MCU GCC Linker" superClass="fr.ac6.managedbuild.tool.gnu.cross.c.linker">
 								<option id="gnu.c.link.option.paths.290093941" name="Library search path (-L)" superClass="gnu.c.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/stm32f0discovery_stdperiph_lib/Release}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/rtos/Release}&quot;"/>
 								</option>
 								<option id="gnu.c.link.option.libs.1732740596" name="Libraries (-l)" superClass="gnu.c.link.option.libs" valueType="libs">
-									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="stm32f0discovery_stdperiph_lib"/>
+									<listOptionValue builtIn="false" value="stm32f0discovery_stdperiph_lib"/>
+									<listOptionValue builtIn="false" value="rtos"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.linker.input.1164659818" superClass="cdt.managedbuild.tool.gnu.c.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
@@ -168,8 +168,6 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/stm32f0discovery_stdperiph_lib/CMSIS/device}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/stm32f0discovery_stdperiph_lib/StdPeriph_Driver/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/stm32f0discovery_stdperiph_lib/Utilities}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Soft_start_2_move_over/rtos}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Soft_start_2_move_over/rtos/include}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.601153346" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 								<inputType id="fr.ac6.managedbuild.tool.gnu.cross.assembler.input.1179813432" superClass="fr.ac6.managedbuild.tool.gnu.cross.assembler.input"/>
