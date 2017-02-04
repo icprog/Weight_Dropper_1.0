@@ -13,7 +13,7 @@
 
 #include "stm32f0xx.h"
 #include "stm32f0_discovery.h"
-//#include "ADC.h"
+#include "ADC.h"
 #include "I2C_controller.h"
 #include "status_leds.h"
 #include "stm32f0xx_tim.h"
@@ -22,9 +22,6 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "semphr.h"
-
-#include "ADC.c"
-#include "Trace.h" //warning! remove later from workspace
 /*
  * I2C2_semaphore_control is used when a task want to take control of the I2C2 bus
  * This does not necessarily mean that the task is using the I2C2 bus it just
