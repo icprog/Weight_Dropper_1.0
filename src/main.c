@@ -124,9 +124,9 @@ void doADC(void *dummy){
 
 		ADC_Init(ADC1, &ADC_InitStructure);
 
-		/* Using channel 11 with 239.5 Cycles sampling time */
-		ADC_ChannelConfig(ADC1, ADC_Channel_11 , ADC_SampleTime_239_5Cycles);
-		//channel 11 for PC1 confirmed on datasheet
+		/* Using channel 3 with 239.5 Cycles sampling time */
+		ADC_ChannelConfig(ADC1, ADC_Channel_3 , ADC_SampleTime_239_5Cycles);
+		//channel 3 for PA3 confirmed on datasheet
 
 		/* Enable the ADC */
 		ADC_Cmd(ADC1, ENABLE);
@@ -136,13 +136,14 @@ void doADC(void *dummy){
 
 		/*Start conversion */
 		ADC_StartOfConversion(ADC1);
+		/*Attempting to use while loop to change channels continuously between channel 3 and 5 */
 		while(1){
-			ADC_ChannelConfig(ADC1, ADC_Channel_11 , ADC_SampleTime_239_5Cycles);
+			ADC_ChannelConfig(ADC1, ADC_Channel_3 , ADC_SampleTime_239_5Cycles);
 			//channel change --> might require turning adc on/off
 			unsigned int voltage_steps = ADC1->DR; //get value from adc
 			int resistance = (int)(voltage_steps*(5000.0/1024.0));
 
-			ADC_ChannelConfig(ADC1, ADC_Channel_13 , ADC_SampleTime_239_5Cycles); //PC3
+			ADC_ChannelConfig(ADC1, ADC_Channel_5 , ADC_SampleTime_239_5Cycles); //PA5 for second channel measurement
 
 			voltage_steps = ADC1->DR; //get value from adc
 			resistance = (int)(voltage_steps*(5000.0/1024.0));
