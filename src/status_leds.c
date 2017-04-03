@@ -23,8 +23,8 @@ extern void blink_led_C8_C9_init()
   //For now use the GPIO_Init function, to save time
   //Be careful because not erasing any of the past settings so failure to overwrite will keep them
 
-  //Select port 3 to be our toggle port
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;
+  //Select port 2 to be our toggle port
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
