@@ -18,6 +18,8 @@
 #include "status_leds.h"
 #include "stm32f0xx_tim.h"
 #include "Buffer.h"
+#include "FSM.h"
+#include "solenoid_driver.h"
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -69,6 +71,8 @@ int main(void)
 	//Configure_GPIO_USART1();
 	//Configure_USART1();
 
+	solenoid_driver_init();
+
 	//safety checks
 
 	vBootTaskInit();
@@ -91,7 +95,7 @@ void bootUpSeq(void *dummy){
 
 void blinkyTask(void *dummy){
 	while(1){
-		GPIOC->ODR ^= GPIO_ODR_8;
+		GPIOA->ODR ^= GPIO_ODR_2;
 		/* maintain LED3 status for 200ms */
 		vTaskDelay(500);
 	}
@@ -166,11 +170,17 @@ void vGeneralTaskInit(void){
 		NULL,                 // pvParameters
 		tskIDLE_PRIORITY + 1, // uxPriority
 		NULL              ); // pvCreatedTask */
-    xTaskCreate(doADC,
+    xTaskCreate(FSM,
+		(const signed char *)"FSM",
+		configMINIMAL_STACK_SIZE,
+		NULL,                 // pvParameters
+		tskIDLE_PRIORITY + 1, // uxPriority
+		NULL              ); // pvCreatedTask */
+    /*xTaskCreate(doADC,
     		(const signed char *)"doADC",
     		configMINIMAL_STACK_SIZE,
     		NULL,
     		tskIDLE_PRIORITY +1,
-    		NULL			);
+    		NULL			);//*/
 }
 

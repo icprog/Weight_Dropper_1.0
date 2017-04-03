@@ -30,13 +30,13 @@ endif
 # Add inputs and outputs from these tool invocations to the build variables 
 
 # All Target
-all: Weight_Dropper_1.0_temp.elf
+all: Weight_Dropper_1.0.elf
 
 # Tool invocations
-Weight_Dropper_1.0_temp.elf: $(OBJS) $(USER_OBJS)
+Weight_Dropper_1.0.elf: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: MCU GCC Linker'
-	arm-none-eabi-gcc -mcpu=cortex-m0 -mthumb -mfloat-abi=soft -T"C:\Users\abates\workspace\Weight_Dropper_1.0_temp\LinkerScript.ld" -Wl,-Map=output.map -Wl,--gc-sections -lm -o "Weight_Dropper_1.0_temp.elf" @"objects.list" $(USER_OBJS) $(LIBS)
+	arm-none-eabi-gcc -mcpu=cortex-m0 -mthumb -mfloat-abi=soft -T"C:\Users\abates\workspace\Weight_Dropper_1.0\LinkerScript.ld" -Wl,-Map=output.map -Wl,--gc-sections -lm -o "Weight_Dropper_1.0.elf" @"objects.list" $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 	$(MAKE) --no-print-directory post-build
@@ -48,8 +48,8 @@ clean:
 
 post-build:
 	-@echo 'Generating binary and Printing size information:'
-	arm-none-eabi-objcopy -O binary "Weight_Dropper_1.0_temp.elf" "Weight_Dropper_1.0_temp.bin"
-	arm-none-eabi-size -B "Weight_Dropper_1.0_temp.elf"
+	arm-none-eabi-objcopy -O binary "Weight_Dropper_1.0.elf" "Weight_Dropper_1.0.bin"
+	arm-none-eabi-size -B "Weight_Dropper_1.0.elf"
 	-@echo ' '
 
 .PHONY: all clean dependents
