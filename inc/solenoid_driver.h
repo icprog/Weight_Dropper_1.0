@@ -10,8 +10,9 @@
 
 #include "stm32f0xx.h"
 
-#define SOLENOID_TIME_ON_MS		(5000)
-#define SOLENOID_TIMER_COUNTER	(10000)
+#define SOLENOID_TIME_ON_MS		(200)
+
+extern const int duty_cycle[11];
 
 #define LEFT_SOLENOID_CCR		(TIM2->CCR3)
 #define RIGHT_SOLENOID_CCR		(TIM2->CCR4)

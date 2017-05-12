@@ -18,8 +18,8 @@
 #include "status_leds.h"
 #include "stm32f0xx_tim.h"
 #include "Buffer.h"
-#include "FSM.h"
 #include "solenoid_driver.h"
+#include "FSM.h"
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -53,16 +53,6 @@ void CreateSemaphores(void){
 int main(void)
 {
 	blink_led_C8_C9_init();
-
-	/*
-	SetClockForADC();
-	SetClockForADC();
-	CalibrateADC();
-	EnableADC();
-	ConfigureADC();
-	ConfigureTIM15();
-	ADC1->CR |= ADC_CR_ADSTART;
-	*/
 
 
 	Configure_GPIO_I2C2();
@@ -101,59 +91,6 @@ void blinkyTask(void *dummy){
 	}
 }
 
-void doADC(void *dummy){
-//	while(1){
-//		GPIOC->ODR ^= GPIO_ODR_9;
-//		vTaskDelay(500);
-//	}
-
-	//myADC_Init();
-
-		ADC_InitTypeDef ADC_InitStructure;
-
-		/*peripheral clock for ADC1 */
-		RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);
-
-		/* Deinitializes ADC1 peripheral registers to their default reset values*/
-		ADC_DeInit(ADC1);
-
-		ADC_StructInit(&ADC_InitStructure);
-
-		/* ADC1 Configuration Settings  */
-		ADC_InitStructure.ADC_Resolution = ADC_Resolution_10b;
-		ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
-		ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_None;
-		ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
-		ADC_InitStructure.ADC_ScanDirection = ADC_ScanDirection_Upward;
-
-		ADC_Init(ADC1, &ADC_InitStructure);
-
-		/* Using channel 11 with 239.5 Cycles sampling time */
-		ADC_ChannelConfig(ADC1, ADC_Channel_11 , ADC_SampleTime_239_5Cycles);
-		//channel 11 for PC1 confirmed on datasheet
-
-		/* Enable the ADC */
-		ADC_Cmd(ADC1, ENABLE);
-
-		/* Wait for the ADRDY flag to check ADC is ready */
-		while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_ADRDY));
-
-		/*Start conversion */
-		ADC_StartOfConversion(ADC1);
-		while(1){
-			ADC_ChannelConfig(ADC1, ADC_Channel_11 , ADC_SampleTime_239_5Cycles);
-			//channel change --> might require turning adc on/off
-			unsigned int voltage_steps = ADC1->DR; //get value from adc
-			int resistance = (int)(voltage_steps*(5000.0/1024.0));
-
-			ADC_ChannelConfig(ADC1, ADC_Channel_13 , ADC_SampleTime_239_5Cycles); //PC3
-
-			voltage_steps = ADC1->DR; //get value from adc
-			resistance = (int)(voltage_steps*(5000.0/1024.0));
-		}
-
-}
-
 void vBootTaskInit(void){
 	xTaskCreate(bootUpSeq,
 		(const signed char *)"boot",
@@ -176,11 +113,11 @@ void vGeneralTaskInit(void){
 		NULL,                 // pvParameters
 		tskIDLE_PRIORITY + 1, // uxPriority
 		NULL              ); // pvCreatedTask */
-    /*xTaskCreate(doADC,
+    xTaskCreate(doADC,
     		(const signed char *)"doADC",
     		configMINIMAL_STACK_SIZE,
     		NULL,
     		tskIDLE_PRIORITY +1,
-    		NULL			);//*/
+    		NULL			);
 }
 
