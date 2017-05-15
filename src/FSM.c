@@ -41,21 +41,21 @@ void FSM(void *dummy){
 
 		char tempOutputString[MAX_BUFFER_SIZE] = "";
 
-		int temp = 0;
+		//convert to volts and shift to array value
+		int temp = (int)((((current_avg_voltage_mv())+500)/1000) - 16);
+				if(temp < 0){
+					temp = 0;
+				}
+				else if(temp > 10){
+					temp = 10;
+				}
+
 		if(strcmp(commandString, "DPR") == 0){
-			//convert to volts and shift to array value
-			temp = (int)((((current_avg_voltage_mv())+500)/1000) - 16);
-			if(temp < 0){
-				temp = 0;
-			}
-			else if(temp > 10){
-				temp = 10;
-			}
 			turn_on_solenoid(right_solenoid, duty_cycle[temp]);
 			UART_push_out("Right\r\n");
 		}
 		else if(strcmp(commandString, "DPL") == 0){
-			turn_on_solenoid(left_solenoid, duty_cycle[6]);
+			turn_on_solenoid(left_solenoid, duty_cycle[temp]);
 			UART_push_out("Left\r\n");
 		}
 		else if(strcmp(commandString, "RID") == 0){
