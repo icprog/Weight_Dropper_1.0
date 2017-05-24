@@ -7,233 +7,67 @@
 #include "stm32f0xx.h"
 #include "system_info.h"
 
+//#define calculation_constant (18*1*1000/4096)
+#define calculation_constant 8 // approximately = (3*10*1000/4096)
+
 // ----------------------------------------------------------------------------
+uint16_t battery_voltage = 0;
 
+int buffer_sum = 0;
+int circular_buffer[8] = {0};
+int index = 0;
 
-/**
-  * @brief  This function enables the peripheral clocks on GPIO port C,
-  *         configures GPIO PC9 in output mode for the Green LED pin,
-  *         configures GPIO PC8 in output mode for the orange LED pin,
-  * @param  None
-  * @retval None
-  */
-void myADC_Init(void){
-	ADC_InitTypeDef ADC_InitStructure;
+void doADC(void *dummy){
 
-	/*peripheral clock for ADC1 */
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);
+		ADC_InitTypeDef ADC_InitStructure;
 
-	/* Deinitializes ADC1 peripheral registers to their default reset values*/
-	ADC_DeInit(ADC1);
+		/*peripheral clock for ADC1 */
+		RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);
 
-	ADC_StructInit(&ADC_InitStructure);
+		/* Deinitializes ADC1 peripheral registers to their default reset values*/
+		ADC_DeInit(ADC1);
 
-	/* ADC1 Configuration Settings  */
-	ADC_InitStructure.ADC_Resolution = ADC_Resolution_12b;
-	ADC_InitStructure.ADC_ContinuousConvMode = 0;
-	ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_None;
-	ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
-	ADC_InitStructure.ADC_ScanDirection = ADC_ScanDirection_Upward;
+		ADC_StructInit(&ADC_InitStructure);
 
-	ADC_Init(ADC1, &ADC_InitStructure);
+		/* ADC1 Configuration Settings  */
+		ADC_InitStructure.ADC_Resolution = ADC_Resolution_12b;
+		ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
+		ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_None;
+		ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
+		ADC_InitStructure.ADC_ScanDirection = ADC_ScanDirection_Upward;
 
-	/* Using channel 11 with 239.5 Cycles sampling time */
-	ADC_ChannelConfig(ADC1, ADC_Channel_11 , ADC_SampleTime_239_5Cycles);
-	//channel 11 for PC1 confirmed on datasheet
+		ADC_Init(ADC1, &ADC_InitStructure);
 
-	/* Enable the ADC */
-	ADC_Cmd(ADC1, ENABLE);
+		/* Using channel 3 with 239.5 Cycles sampling time */
+		ADC_ChannelConfig(ADC1, ADC_Channel_3 , ADC_SampleTime_239_5Cycles);
 
-	/* Wait for the ADRDY flag to check ADC is ready */
-	while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_ADRDY));
+		/* Enable the ADC */
+		ADC_Cmd(ADC1, ENABLE);
 
-	/*Start conversion */
-	ADC_StartOfConversion(ADC1);
+		/* Wait for the ADRDY flag to check ADC is ready */
+		while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_ADRDY));
+
+		/*Start conversion */
+		ADC_StartOfConversion(ADC1);
+		while(1){
+			unsigned int voltage_steps = ADC1->DR; //get value from adc
+
+			/* divide by resolution of adc (4096 steps)
+			 * multiply by VDD = 3V
+			 * compensate for voltage divider with 10x
+			 * multiply by 1000 for mV*/
+			battery_voltage = (voltage_steps*calculation_constant);
+			/*
+			 * Creating circular buffer of eight values:
+			 */
+			buffer_sum = buffer_sum - circular_buffer[index % 8] + battery_voltage;
+			circular_buffer[index % 8] = battery_voltage;
+			index++;
+
+			vTaskDelay(500);
+		}
 }
-//__INLINE void  ConfigureGPIO(void)
-//{
-//  /* (1) Enable the peripheral clock of GPIOC */
-//  /* (2) Select output mode (01) on GPIOC pin 8 and 9 */
-//  RCC->AHBENR |= RCC_AHBENR_GPIOCEN; /* (1) */
-//  GPIOC->MODER = (GPIOC->MODER & ~(GPIO_MODER_MODER8|GPIO_MODER_MODER9)) \
-//               | (GPIO_MODER_MODER8_0|GPIO_MODER_MODER9_0); /* (2) */
-//}
-//
-//
-///**
-//  * @brief  This function enables the clock in the RCC for the ADC
-//  *         and start HSI 14MHz dedicated RC oscillator
-//  * @param  None
-//  * @retval None
-//  */
-//__INLINE void SetClockForADC(void)
-//{
-//  /* (1) Enable the peripheral clock of the ADC */
-//  /* (2) Start HSI14 RC oscillator */
-//  /* (3) Wait HSI14 is ready */
-//  RCC->APB2ENR |= RCC_APB2ENR_ADC1EN; /* (1) */
-//  RCC->CR2 |= RCC_CR2_HSI14ON; /* (2) */
-//  while ((RCC->CR2 & RCC_CR2_HSI14RDY) == 0) /* (3) */
-//  {
-//    /* For robust implementation, add here time-out management */
-//  }
-//}
-//
-//
-///**
-//  * @brief  This function performs a self-calibration of the ADC
-//  * @param  None
-//  * @retval None
-//  */
-//__INLINE void  CalibrateADC(void)
-//{
-//  /* (1) Ensure that ADEN = 0 */
-//  /* (2) Clear ADEN */
-//  /* (3) Launch the calibration by setting ADCAL */
-//  /* (4) Wait until ADCAL=0 */
-//  if ((ADC1->CR & ADC_CR_ADEN) != 0) /* (1) */
-//  {
-//    ADC1->CR &= (uint32_t)(~ADC_CR_ADEN);  /* (2) */
-//  }
-//  ADC1->CR |= ADC_CR_ADCAL; /* (3) */
-//  while ((ADC1->CR & ADC_CR_ADCAL) != 0) /* (4) */
-//  {
-//    /* For robust implementation, add here time-out management */
-//  }
-//}
-//
-//
-///**
-//  * @brief  This function configure the ADC to convert the internal reference voltage (VRefInt)
-//  *         The conversion frequency is 14MHz
-//  * @param  None
-//  * @retval None
-//  */
-//__INLINE void ConfigureADC(void)
-//{
-//  /* (1) Select HSI14 by writing 00 in CKMODE (reset value) */
-//  /* (2) Select the external trigger on falling edge and external trigger on TIM15_TRGO */
-//  /* (3) Select CHSEL17 for VRefInt */
-//  /* (4) Select a sampling mode of 111 i.e. 239.5 ADC clk to be greater than 17.1us */
-//  /* (5) Wake-up the VREFINT (only for VBAT, Temp sensor and VRefInt) */
-//  //ADC1->CFGR2 &= ~ADC_CFGR2_CKMODE; /* (1) */
-//  ADC1->CFGR1 |= ADC_CFGR1_EXTEN_0 | ADC_CFGR1_EXTSEL_2; /* (2) */
-//  ADC1->CHSELR = ADC_CHSELR_CHSEL10; /* (3) */
-//  //ADC1->SMPR |= ADC_SMPR_SMP_0 | ADC_SMPR_SMP_1 | ADC_SMPR_SMP_2; /* (4) */
-//  ADC->CCR |= ADC_CCR_VREFEN; /* (5) */
-//}
-//
-//
-///**
-//  * @brief  This function enables the ADC
-//  * @param  None
-//  * @retval None
-//  */
-//__INLINE void EnableADC(void)
-//{
-//  /* (1) Enable the ADC */
-//  /* (2) Wait until ADC ready */
-//  do
-//  {
-//    /* For robust implementation, add here time-out management */
-//		ADC1->CR |= ADC_CR_ADEN; /* (1) */
-//  }while ((ADC1->ISR & ADC_ISR_ADRDY) == 0) /* (2) */;
-//}
-//
-//
-///**
-//  * @brief  This function disables the ADC
-//  * @param  None
-//  * @retval None
-//  */
-//__INLINE void DisableADC(void)
-//{
-//  /* (1) Ensure that no conversion on going */
-//  /* (2) Stop any ongoing conversion */
-//  /* (3) Wait until ADSTP is reset by hardware i.e. conversion is stopped */
-//  /* (4) Disable the ADC */
-//  /* (5) Wait until the ADC is fully disabled */
-//  if ((ADC1->CR & ADC_CR_ADSTART) != 0) /* (1) */
-//  {
-//    ADC1->CR |= ADC_CR_ADSTP; /* (2) */
-//  }
-//  while ((ADC1->CR & ADC_CR_ADSTP) != 0) /* (3) */
-//  {
-//     /* For robust implementation, add here time-out management */
-//  }
-//  ADC1->CR |= ADC_CR_ADDIS; /* (4) */
-//  while ((ADC1->CR & ADC_CR_ADEN) != 0) /* (5) */
-//  {
-//    /* For robust implementation, add here time-out management */
-//  }
-//}
-//
-///**
-//  * @brief  This function configures the Timer15 to generate an external trigger
-//  *         on TRGO each 1s.
-//  * @param  None
-//  * @retval None
-//  */
-//__INLINE void ConfigureTIM15(void)
-//{
-//  /* (1) Enable the peripheral clock of the TIM15 */
-//  /* (2) Configure MMS=010 to output a rising edge at each update event */
-//  /* (3) Select PCLK/960 i.e. 24MHz/960=25kHz */
-//  /* (4) Set one update event each second */
-//  /* (5) Enable TIM15 */
-//  RCC->APB2ENR |= RCC_APB2ENR_TIM15EN; /* (1) */
-//  TIM15->CR2 |= TIM_CR2_MMS_1; /* (2) */
-//  TIM15->PSC = 959; /* (3) */
-//  TIM15->ARR = (uint16_t)50000; /* (4) */
-//  TIM15->CR1 |= TIM_CR1_CEN; /* (5) */
-//}
-//
-//extern int voltage_in_millivolts(){
-//	return (ADC1->DR * MILLIVOLTS_TO_12BIT_CONVERSION_DENOM) / MILLIVOLTS_TO_12BIT_CONVERSION_NUMER;
-//}
-//
-//
-///******************************************************************************/
-///*            Cortex-M0 Processor Exceptions Handlers                         */
-///******************************************************************************/
-//
-///**
-//  * @brief  This function handles NMI exception.
-//  * @param  None
-//  * @retval None
-//  */
-//void NMI_Handler(void)
-//{
-//}
-//
-///**
-//  * @brief  This function handles Hard Fault exception.
-//  * @param  None
-//  * @retval None
-//  */
-//void HardFault_Handler(void)
-//{
-//  /* Go to infinite loop when Hard Fault exception occurs */
-//  while (1)
-//  {
-//  }
-//}
-//
-///**
-//  * @brief  This function handles SVCall exception.
-//  * @param  None
-//  * @retval None
-//  */
-//void SVC_Handler(void)
-//{
-//}
-//
-///**
-//  * @brief  This function handles PendSVC exception.
-//  * @param  None
-//  * @retval None
-//  */
+uint16_t current_avg_voltage_mv(){
 
-
-
-// ----------------------------------------------------------------------------
+	return buffer_sum/8;
+}

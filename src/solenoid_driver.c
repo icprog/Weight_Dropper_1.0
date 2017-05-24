@@ -13,6 +13,13 @@
 static xTimerHandle xSafetyStopTimer;
 static const long timer_id = 0x1234;
 
+/* SOLENOID_TIMER_COUNTER_DUTY_CYCLE
+ * Values in array determined experimentally for 16V at start of array
+ * to 26V at the end of the array. (1V increments). eg: 650 is 65% duty
+ * cycle for 16V to 17V.
+ */
+const int duty_cycle[11] = {650, 650, 600, 550, 500, 500, 500, 450, 450, 400, 400};
+
 static void vSafetyStopTimerCallback( TimerHandle_t *pxTimer )
 {
 	if( (long)pvTimerGetTimerID(pxTimer) == timer_id)
@@ -26,8 +33,8 @@ static void timer3_it_config(void){
 	/* Time base configuration */
 	TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
 
-	TIM_TimeBaseStructure.TIM_Period = 10000 - 1; // 600 kHz down to 60Hz (2 ms)
-	TIM_TimeBaseStructure.TIM_Prescaler = 80 - 1; // 48 MHz Clock down to 600 kHz (adjust per your clock)
+	TIM_TimeBaseStructure.TIM_Period = 1000 - 1; // 24kHz
+	TIM_TimeBaseStructure.TIM_Prescaler = 2 - 1; // 24 MHz Clock (adjust per your clock)
 	TIM_TimeBaseStructure.TIM_ClockDivision = 0;
 	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
 	TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
